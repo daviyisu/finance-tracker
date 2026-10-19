@@ -6,6 +6,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/anadir/anadir.page').then((m) => m.AnadirPage),
   },
   {
+    path: 'presupuesto/:id',
+    loadComponent: () => import('./pages/presupuesto/presupuesto.page').then((m) => m.PresupuestoPage),
+  },
+  {
+    path: 'categorias',
+    loadComponent: () => import('./pages/categorias/categorias.page').then((m) => m.CategoriasPage),
+  },
+  {
+    path: 'categoria/:id',
+    loadComponent: () => import('./pages/categoria/categoria.page').then((m) => m.CategoriaPage),
+  },
+  {
     path: '',
     loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
   },

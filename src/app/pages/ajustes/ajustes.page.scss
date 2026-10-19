@@ -1,0 +1,38 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 20px 24px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.currency {
+  width: 120px;
+}
+
+ion-select {
+  --padding-start: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.lead {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.block {
+  display: block;
+}
+
+.hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 500;
+}
