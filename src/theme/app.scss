@@ -1,0 +1,74 @@
+// Estilos compartidos entre pantallas.
+
+body {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-page {
+  --background: var(--app-bg);
+}
+
+.app-card {
+  background: var(--app-surface);
+  border-radius: var(--app-radius-lg);
+}
+
+.app-muted {
+  color: var(--app-muted);
+}
+
+.app-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.app-section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+// Icono de categoría sobre un cuadrado tintado
+.cat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 20px;
+
+  &.small {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+}
+
+.app-bar {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--app-track);
+  overflow: hidden;
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--app-accent);
+    transition: width 0.3s ease;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+// Margen superior que respeta la isla dinámica / notch cuando no hay ion-header
+.app-page.safe-top {
+  --padding-top: calc(var(--ion-safe-area-top, 0px) + 16px);
+}

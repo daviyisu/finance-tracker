@@ -1,2 +1,48 @@
-// For information on how to create your own theme, please refer to:
+// Tema de Finance Tracker. De momento solo modo claro.
 // https://ionicframework.com/docs/theming/
+
+:root {
+  // Colores propios de la app
+  --app-bg: #f4f4f1;
+  --app-surface: #ffffff;
+  --app-ink: #16181d;
+  --app-muted: #5b6070;
+  --app-line: #efefea;
+  --app-track: #ecece7;
+  --app-segment: #e6e6e0;
+  --app-accent: #1f6f54;
+  --app-warn-bg: #fef3c7;
+  --app-warn-fg: #7c2d12;
+  --app-warn-icon: #b45309;
+  --app-warn-bar: #d97706;
+  --app-danger: #b91c1c;
+  --app-radius-lg: 20px;
+  --app-radius-md: 16px;
+
+  // Ionic
+  --ion-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --ion-background-color: var(--app-bg);
+  --ion-background-color-rgb: 244, 244, 241;
+  --ion-text-color: var(--app-ink);
+  --ion-text-color-rgb: 22, 24, 29;
+  --ion-toolbar-background: var(--app-bg);
+  --ion-toolbar-border-color: transparent;
+  --ion-tab-bar-background: var(--app-surface);
+  --ion-tab-bar-border-color: #e6e6e0;
+  --ion-tab-bar-color: var(--app-muted);
+  --ion-tab-bar-color-selected: var(--app-accent);
+
+  --ion-color-primary: #1f6f54;
+  --ion-color-primary-rgb: 31, 111, 84;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1b624a;
+  --ion-color-primary-tint: #357d65;
+
+  --ion-color-dark: #16181d;
+  --ion-color-dark-rgb: 22, 24, 29;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #13151a;
+  --ion-color-dark-tint: #2d2f34;
+}
