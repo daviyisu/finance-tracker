@@ -33,7 +33,7 @@
 
     <div class="grid" role="group" aria-label="Categorías">
       @for (c of categories(); track c.id) {
-        <button type="button" class="cat" [disabled]="saving()" (click)="pick(c)">
+        <button type="button" class="cat" [disabled]="saving()" [attr.aria-label]="'Guardar en ' + c.name" (click)="pick(c)">
           <span class="cat-icon small" [style.background]="c.bg" [style.color]="c.fg">
             <ion-icon [name]="c.icon" aria-hidden="true"></ion-icon>
           </span>

@@ -1,83 +1,49 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 import { MIGRATIONS } from './schema';
+import { SqlDriver, SqlValue } from './sql-driver';
 
 const DB_NAME = 'finance_tracker';
 
-type SqlValue = string | number | null;
-
 /**
- * Conexión única a la base SQLite local.
- * En iOS/Android usa el SQLite nativo; en el navegador (ionic serve) usa jeep-sqlite,
- * que guarda la base en IndexedDB.
+ * Conexión única a la base SQLite local: nativa en iOS/Android
+ * y sql.js en el navegador mientras se desarrolla.
  */
 @Injectable({ providedIn: 'root' })
 export class DatabaseService {
-  private readonly sqlite = new SQLiteConnection(CapacitorSQLite);
-  private readonly isWeb = Capacitor.getPlatform() === 'web';
-  private connection?: Promise<SQLiteDBConnection>;
+  private driver?: Promise<SqlDriver>;
 
   async query<T>(statement: string, values: SqlValue[] = []): Promise<T[]> {
-    const db = await this.db();
-    const result = await db.query(statement, values);
-    return (result.values ?? []) as T[];
+    return (await this.db()).query<T>(statement, values);
   }
 
   async run(statement: string, values: SqlValue[] = []): Promise<void> {
-    const db = await this.db();
-    await db.run(statement, values, true);
-    await this.persist();
+    await (await this.db()).run(statement, values);
   }
 
-  private db(): Promise<SQLiteDBConnection> {
-    this.connection ??= this.open().catch((error) => {
-      this.connection = undefined;
+  private db(): Promise<SqlDriver> {
+    this.driver ??= this.open().catch((error) => {
+      this.driver = undefined;
       throw error;
     });
-    return this.connection;
+    return this.driver;
   }
 
-  private async open(): Promise<SQLiteDBConnection> {
-    if (this.isWeb) {
-      await this.prepareWebStore();
-    }
-    const consistent = (await this.sqlite.checkConnectionsConsistency()).result;
-    const exists = (await this.sqlite.isConnection(DB_NAME, false)).result;
-    const db =
-      consistent && exists
-        ? await this.sqlite.retrieveConnection(DB_NAME, false)
-        : await this.sqlite.createConnection(DB_NAME, false, 'no-encryption', 1, false);
-    await db.open();
-    await db.execute('PRAGMA foreign_keys = ON;', false);
-    await this.migrate(db);
-    return db;
+  private async open(): Promise<SqlDriver> {
+    const driver =
+      Capacitor.getPlatform() === 'web'
+        ? await (await import('./web-driver')).openWebDriver(DB_NAME)
+        : await (await import('./native-driver')).openNativeDriver(DB_NAME);
+    await this.migrate(driver);
+    return driver;
   }
 
-  private async migrate(db: SQLiteDBConnection): Promise<void> {
-    const rows = (await db.query('PRAGMA user_version;')).values ?? [];
+  private async migrate(driver: SqlDriver): Promise<void> {
+    const rows = await driver.query<{ user_version: number }>('PRAGMA user_version;');
     const current = Number(rows[0]?.user_version ?? 0);
     for (let version = current; version < MIGRATIONS.length; version++) {
-      await db.execute(`${MIGRATIONS[version]}\nPRAGMA user_version = ${version + 1};`, true);
-    }
-    if (current < MIGRATIONS.length) {
-      await this.persist();
-    }
-  }
-
-  private async prepareWebStore(): Promise<void> {
-    if (!document.querySelector('jeep-sqlite')) {
-      document.body.appendChild(document.createElement('jeep-sqlite'));
-    }
-    await customElements.whenDefined('jeep-sqlite');
-    await this.sqlite.initWebStore();
-  }
-
-  /** En el navegador hay que volcar la base a IndexedDB tras cada escritura. */
-  private async persist(): Promise<void> {
-    if (this.isWeb) {
-      await this.sqlite.saveToStore(DB_NAME);
+      await driver.executeScript(`${MIGRATIONS[version]}\nPRAGMA user_version = ${version + 1};`);
     }
   }
 }
