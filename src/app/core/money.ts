@@ -66,3 +66,25 @@ export function displayInput(input: string): string {
   const grouped = groupThousands(integer || '0');
   return decimals === undefined ? grouped : `${grouped},${decimals}`;
 }
+
+/**
+ * Importe escrito a mano ("92", "92,5", "1.200,50", "92.5") → céntimos.
+ * Devuelve null si no es un número positivo válido.
+ */
+export function parseAmount(text: string): number | null {
+  let value = text.replace(/\s|€|\$/g, '');
+  if (!value) return null;
+  if (value.includes(',')) {
+    value = value.replace(/\./g, '').replace(',', '.');
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(value)) {
+    value = value.replace(/\./g, ''); // "1.200" = mil doscientos
+  }
+  if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
+  const cents = Math.round(Number(value) * 100);
+  return cents > 0 ? cents : null;
+}
+
+/** Céntimos → texto editable: 9200 → "92", 9250 → "92,50". */
+export function centsToInput(cents: number): string {
+  return cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2).replace('.', ',');
+}

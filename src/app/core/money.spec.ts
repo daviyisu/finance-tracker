@@ -1,4 +1,4 @@
-import { type KeypadKey, applyKey, displayInput, formatMoney, formatSignedMoney, inputToCents } from './money';
+import { type KeypadKey, applyKey, centsToInput, displayInput, formatMoney, formatSignedMoney, inputToCents, parseAmount } from './money';
 
 const type = (keys: KeypadKey[]) => keys.reduce((acc, k) => applyKey(acc, k), '');
 
@@ -37,5 +37,20 @@ describe('money', () => {
     expect(displayInput('')).toBe('0');
     expect(displayInput('1234,5')).toBe('1.234,5');
     expect(displayInput('0,')).toBe('0,');
+  });
+});
+
+describe('parseAmount', () => {
+  it('acepta los formatos habituales', () => {
+    expect(parseAmount('92')).toBe(9200);
+    expect(parseAmount('92,5')).toBe(9250);
+    expect(parseAmount('92.5')).toBe(9250);
+    expect(parseAmount('1.200')).toBe(120000);
+    expect(parseAmount('1.200,50 €')).toBe(120050);
+    expect(parseAmount('0')).toBe(null);
+    expect(parseAmount('abc')).toBe(null);
+    expect(parseAmount('')).toBe(null);
+    expect(centsToInput(9200)).toBe('92');
+    expect(centsToInput(9250)).toBe('92,50');
   });
 });

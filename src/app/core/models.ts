@@ -22,6 +22,8 @@ export interface Category {
   icon: string;
   color: CategoryColor;
   sortOrder: number;
+  /** Oculta: no se ofrece al añadir, pero conserva sus movimientos. */
+  archived?: boolean;
 }
 
 export interface Movement {

@@ -72,3 +72,89 @@ body {
 .app-page.safe-top {
   --padding-top: calc(var(--ion-safe-area-top, 0px) + 16px);
 }
+
+// Grupos de filas tipo "Ajustes"
+.group-title {
+  margin: 0 0 8px;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--app-muted);
+}
+
+.group {
+  padding: 0 16px;
+}
+
+.group-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  color: var(--app-ink);
+  text-decoration: none;
+  width: 100%;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+
+  & + & {
+    border-top: 1px solid var(--app-line);
+  }
+  .grow {
+    flex: 1;
+    min-width: 0;
+  }
+  .key {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--app-muted);
+  }
+  .chev {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #6b7080;
+  }
+  &.accent {
+    color: var(--app-accent);
+    font-weight: 700;
+    min-height: 52px;
+  }
+}
+
+.thin-bar {
+  display: block;
+  height: 5px;
+  margin-top: 6px;
+  border-radius: 99px;
+  background: var(--app-line);
+  overflow: hidden;
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--app-accent);
+
+    &.warn {
+      background: var(--app-warn-bar);
+    }
+    &.over {
+      background: var(--app-danger);
+    }
+  }
+}
+
+.danger-btn {
+  --background: var(--app-surface);
+  --background-activated: var(--app-line);
+  --color: var(--app-danger);
+  --border-radius: 16px;
+  --box-shadow: none;
+  height: 56px;
+  font-weight: 700;
+}
