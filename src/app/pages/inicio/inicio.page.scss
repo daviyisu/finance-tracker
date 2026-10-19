@@ -1,0 +1,171 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 112px; // deja sitio al botón fijo
+}
+
+.eyebrow {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+
+  p {
+    margin: 0;
+  }
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .big {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+}
+
+.app-bar .warn {
+  background: var(--app-warn-bar);
+}
+.app-bar .over {
+  background: var(--app-danger);
+}
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+
+  .left {
+    color: var(--app-accent);
+  }
+  .left.warn {
+    color: var(--app-warn-icon);
+  }
+  .left.over {
+    color: var(--app-danger);
+  }
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 10px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 12px;
+  border-radius: var(--app-radius-md);
+
+  span {
+    font-size: 12px;
+    font-weight: 600;
+  }
+  strong {
+    font-size: 16px;
+  }
+}
+
+.positive {
+  color: var(--app-accent);
+}
+.negative {
+  color: var(--app-danger);
+}
+
+.warn-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--app-warn-bg);
+  color: var(--app-warn-fg);
+  font-size: 13px;
+  font-weight: 600;
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--app-warn-icon);
+  }
+}
+
+.recent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list {
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+
+  & + & {
+    border-top: 1px solid var(--app-line);
+  }
+  .text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .name {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .sub {
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .amount {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+.notice,
+.empty {
+  margin: 0;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.add-wrap {
+  right: 20px;
+  bottom: 16px;
+  left: 20px;
+}
+
+.add-btn {
+  --border-radius: 18px;
+  --box-shadow: 0 8px 24px rgba(22, 24, 29, 0.22);
+  height: 60px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}

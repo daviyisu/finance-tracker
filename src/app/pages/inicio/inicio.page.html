@@ -1,0 +1,87 @@
+<ion-content class="app-page safe-top" [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="stack">
+    <header>
+      <p class="eyebrow app-muted">{{ title() }}</p>
+      <h1 class="app-title">Resumen</h1>
+    </header>
+
+    @if (failed()) {
+      <p class="app-card notice" role="alert">No se han podido cargar tus datos. Desliza hacia abajo para reintentar.</p>
+    }
+
+    @if (summary(); as s) {
+      <section class="app-card month" aria-label="Gasto del mes">
+        <p class="label app-muted">Gastado este mes</p>
+        <p class="big">{{ money(s.monthExpenseCents) }}</p>
+        @if (budget(); as b) {
+          <div class="app-bar" role="progressbar" aria-label="Presupuesto mensual" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="b.percent">
+            <span [style.width.%]="b.width" [class]="b.state"></span>
+          </div>
+          <div class="legend">
+            <span class="app-muted">{{ b.percent }}% de {{ b.limit }}</span>
+            <span [class]="'left ' + b.state">{{ b.left }}</span>
+          </div>
+        } @else {
+          <p class="legend app-muted">Aún no tienes presupuesto mensual. Podrás fijarlo en Ajustes.</p>
+        }
+      </section>
+
+      <section class="tiles">
+        <div class="app-card tile">
+          <span class="app-muted">Hoy</span>
+          <strong class="nowrap">{{ money(s.todayExpenseCents) }}</strong>
+        </div>
+        <div class="app-card tile">
+          <span class="app-muted">Semana</span>
+          <strong class="nowrap">{{ money(s.weekExpenseCents) }}</strong>
+        </div>
+        <div class="app-card tile">
+          <span class="app-muted nowrap">Te queda este mes</span>
+          <strong class="nowrap" [class.positive]="remainingCents() >= 0" [class.negative]="remainingCents() < 0">
+            {{ remainingCents() < 0 ? '−' : '' }}{{ money(remainingCents() < 0 ? -remainingCents() : remainingCents()) }}
+          </strong>
+        </div>
+      </section>
+
+      @if (alert(); as text) {
+        <div class="warn-banner" role="status">
+          <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+          <span>{{ text }}</span>
+        </div>
+      }
+
+      <section class="recent">
+        <h2 class="app-section-title">Últimos movimientos</h2>
+        @if (recent().length) {
+          <ul class="app-card list">
+            @for (row of recent(); track row.id) {
+              <li class="row">
+                <span class="cat-icon" [style.background]="row.bg" [style.color]="row.fg">
+                  <ion-icon [name]="row.icon" aria-hidden="true"></ion-icon>
+                </span>
+                <span class="text">
+                  <span class="name">{{ row.name }}</span>
+                  <span class="sub app-muted">{{ row.subtitle }}</span>
+                </span>
+                <span class="amount nowrap" [class.positive]="row.income">{{ row.amount }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="app-card empty app-muted">Aún no hay movimientos. Pulsa «Añadir gasto» para registrar el primero.</p>
+        }
+      </section>
+    }
+  </div>
+
+  <div slot="fixed" class="add-wrap">
+    <ion-button class="add-btn" color="dark" expand="block" routerLink="/anadir">
+      <ion-icon slot="start" name="add" aria-hidden="true"></ion-icon>
+      Añadir gasto
+    </ion-button>
+  </div>
+</ion-content>

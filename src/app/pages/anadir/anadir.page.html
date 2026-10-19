@@ -1,0 +1,77 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="round" aria-label="Cerrar" (click)="close()">
+        <ion-icon slot="icon-only" name="close" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-segment class="type" [value]="type()" (ionChange)="setType($event.detail.value)" aria-label="Tipo de movimiento">
+      <ion-segment-button value="expense"><ion-label>Gasto</ion-label></ion-segment-button>
+      <ion-segment-button value="income"><ion-label>Ingreso</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  <div class="stack">
+    <p class="amount nowrap" [class.nudge]="nudge()" aria-live="polite">
+      {{ display() }} <span class="app-muted">{{ symbol() }}</span>
+    </p>
+
+    <div class="chips">
+      <button type="button" class="chip" (click)="dateOpen.set(true)">
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        {{ dateText() }}
+      </button>
+      <button type="button" class="chip" (click)="editNote()">
+        <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        <span class="chip-text">{{ note() || 'Añadir nota' }}</span>
+      </button>
+    </div>
+
+    <p class="hint app-muted">{{ amountCents() > 0 ? 'Toca una categoría para guardar' : 'Escribe el importe' }}</p>
+
+    <div class="grid" role="group" aria-label="Categorías">
+      @for (c of categories(); track c.id) {
+        <button type="button" class="cat" [disabled]="saving()" (click)="pick(c)">
+          <span class="cat-icon small" [style.background]="c.bg" [style.color]="c.fg">
+            <ion-icon [name]="c.icon" aria-hidden="true"></ion-icon>
+          </span>
+          <span class="cat-name">{{ c.name }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="dateOpen()" (didDismiss)="dateOpen.set(false)" [initialBreakpoint]="0.62" [breakpoints]="[0, 0.62]">
+    <ng-template>
+      <ion-datetime
+        class="picker"
+        presentation="date-time"
+        locale="es-ES"
+        [firstDayOfWeek]="1"
+        [value]="datetimeValue()"
+        [max]="maxDate"
+        [showDefaultButtons]="true"
+        doneText="Listo"
+        cancelText="Cancelar"
+        (ionChange)="setDate($event.detail.value)"
+        (ionCancel)="dateOpen.set(false)"
+      ></ion-datetime>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="keypad" role="group" aria-label="Teclado numérico">
+    @for (k of keys; track k) {
+      <button type="button" class="key" [attr.aria-label]="k === 'del' ? 'Borrar' : k === ',' ? 'Coma decimal' : null" (click)="press(k)">
+        @if (k === 'del') {
+          <ion-icon name="backspace-outline" aria-hidden="true"></ion-icon>
+        } @else {
+          {{ k }}
+        }
+      </button>
+    }
+  </div>
+</ion-footer>
