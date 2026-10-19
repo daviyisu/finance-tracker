@@ -86,3 +86,13 @@ export function timeLabel(value: string): string {
   const date = fromLocalIso(value);
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
+
+const WEEKDAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+/** Cabecera de un día en el historial: "Hoy", "Ayer", "Sábado, 17 oct" (+ año si no es el actual). */
+export function dayHeading(value: string, now: Date): string {
+  const label = dayLabel(value, now);
+  if (label === 'Hoy' || label === 'Ayer') return label;
+  const weekday = WEEKDAYS[fromLocalIso(value).getDay()];
+  return `${weekday[0].toUpperCase()}${weekday.slice(1)}, ${label}`;
+}

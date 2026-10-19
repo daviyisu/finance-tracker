@@ -6,6 +6,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/anadir/anadir.page').then((m) => m.AnadirPage),
   },
   {
+    path: 'historial',
+    loadComponent: () => import('./pages/historial/historial.page').then((m) => m.HistorialPage),
+  },
+  {
+    path: 'movimiento/:id',
+    loadComponent: () => import('./pages/movimiento/movimiento.page').then((m) => m.MovimientoPage),
+  },
+  {
     path: 'presupuesto/:id',
     loadComponent: () => import('./pages/presupuesto/presupuesto.page').then((m) => m.PresupuestoPage),
   },

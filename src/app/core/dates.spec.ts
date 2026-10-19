@@ -1,4 +1,4 @@
-import { dayLabel, fromLocalIso, monthRange, monthTitle, timeLabel, toLocalIso, weekRange } from './dates';
+import { dayHeading, dayLabel, fromLocalIso, monthRange, monthTitle, timeLabel, toLocalIso, weekRange } from './dates';
 
 describe('dates', () => {
   const now = new Date(2026, 9, 19, 10, 12, 0); // lunes 19 oct 2026
@@ -30,5 +30,11 @@ describe('dates', () => {
     expect(dayLabel('2026-10-15T08:00:00', now)).toBe('15 oct');
     expect(dayLabel('2025-12-31T08:00:00', now)).toBe('31 dic 2025');
     expect(timeLabel('2026-10-19T09:05:00')).toBe('09:05');
+  });
+
+  it('cabeceras del historial', () => {
+    expect(dayHeading('2026-10-19T08:00:00', now)).toBe('Hoy');
+    expect(dayHeading('2026-10-17T08:00:00', now)).toBe('Sábado, 17 oct');
+    expect(dayHeading('2025-12-31T08:00:00', now)).toBe('Miércoles, 31 dic 2025');
   });
 });

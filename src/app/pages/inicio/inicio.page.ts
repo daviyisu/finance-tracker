@@ -2,11 +2,10 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { RouterLink } from '@angular/router';
 import { IonButton, IonContent, IonIcon, IonRefresher, IonRefresherContent, RefresherCustomEvent } from '@ionic/angular';
 
-import { CATEGORY_COLORS } from '../../core/categories';
-import { dayLabel, monthTitle, timeLabel } from '../../core/dates';
+import { monthTitle } from '../../core/dates';
 import { FinanceService, HomeSummary } from '../../core/finance.service';
-import { formatMoney, formatSignedMoney } from '../../core/money';
-import { Movement } from '../../core/models';
+import { formatMoney } from '../../core/money';
+import { movementRow } from '../../core/movement-view';
 
 const WARN_PERCENT = 80;
 
@@ -53,7 +52,11 @@ export class InicioPage {
       : `${category.name} va al ${a.percent}% de su presupuesto ${amounts}`;
   });
 
-  readonly recent = computed(() => (this.summary()?.recent ?? []).map((m) => this.toRow(m)));
+  readonly recent = computed(() =>
+    (this.summary()?.recent ?? []).map((m) =>
+      movementRow(m, this.finance.categoriesById(), this.finance.settings().currency, this.now()),
+    ),
+  );
 
   constructor() {
     // Recarga al guardar o borrar un movimiento.
@@ -86,23 +89,5 @@ export class InicioPage {
       console.error('No se pudo cargar el resumen', error);
       this.failed.set(true);
     }
-  }
-
-  private toRow(m: Movement) {
-    const category = this.finance.categoriesById().get(m.categoryId);
-    const colors = CATEGORY_COLORS[category?.color ?? 'slate'];
-    const day = dayLabel(m.occurredAt, this.now());
-    const when = day === 'Hoy' || day === 'Ayer' ? `${day}, ${timeLabel(m.occurredAt)}` : day;
-    const income = m.type === 'income';
-    return {
-      id: m.id,
-      name: category?.name ?? 'Sin categoría',
-      icon: category?.icon ?? 'ellipsis-horizontal',
-      fg: colors.fg,
-      bg: colors.bg,
-      subtitle: m.note ? `${when} · ${m.note}` : when,
-      amount: formatSignedMoney(income ? m.amountCents : -m.amountCents, this.finance.settings().currency),
-      income,
-    };
   }
 }

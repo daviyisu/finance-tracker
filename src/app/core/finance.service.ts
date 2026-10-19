@@ -123,6 +123,54 @@ export class FinanceService {
     return movement;
   }
 
+  async getMovement(id: string): Promise<Movement | null> {
+    const rows = await this.db.query<MovementRow>('SELECT * FROM movements WHERE id = ?', [id]);
+    return rows[0] ? toMovement(rows[0]) : null;
+  }
+
+  async updateMovement(id: string, input: NewMovement): Promise<void> {
+    await this.db.run(
+      `UPDATE movements SET type = ?, amount_cents = ?, category_id = ?, occurred_at = ?, note = ?
+       WHERE id = ?`,
+      [input.type, input.amountCents, input.categoryId, input.occurredAt, input.note?.trim() || null, id],
+    );
+    this.bump();
+  }
+
+  /** Movimientos más recientes primero, con búsqueda por nota o categoría y filtro por categoría. */
+  async listMovements(options: { search?: string; categoryId?: string | null; limit: number; offset: number }): Promise<Movement[]> {
+    await this.ready();
+    const where: string[] = [];
+    const values: (string | number)[] = [];
+    const search = options.search?.trim();
+    if (search) {
+      where.push('(m.note LIKE ? OR c.name LIKE ?)');
+      values.push(`%${search}%`, `%${search}%`);
+    }
+    if (options.categoryId) {
+      where.push('m.category_id = ?');
+      values.push(options.categoryId);
+    }
+    const rows = await this.db.query<MovementRow>(
+      `SELECT m.* FROM movements m LEFT JOIN categories c ON c.id = m.category_id
+       ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+       ORDER BY m.occurred_at DESC, m.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [...values, options.limit, options.offset],
+    );
+    return rows.map(toMovement);
+  }
+
+  /** Vuelve a insertar un movimiento borrado (para "Deshacer"). */
+  async restoreMovement(m: Movement): Promise<void> {
+    await this.db.run(
+      `INSERT INTO movements (id, type, amount_cents, category_id, occurred_at, note, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [m.id, m.type, m.amountCents, m.categoryId, m.occurredAt, m.note, m.createdAt],
+    );
+    this.bump();
+  }
+
   async deleteMovement(id: string): Promise<void> {
     await this.db.run('DELETE FROM movements WHERE id = ?', [id]);
     this.bump();
