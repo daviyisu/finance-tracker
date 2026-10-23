@@ -38,7 +38,7 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss", "src/theme/variables.scss", "src/theme/app.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": ["sql.js"],
             "browser": "src/main.ts"
