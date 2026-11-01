@@ -1,0 +1,84 @@
+<ion-content class="app-page safe-top" [fullscreen]="true">
+  <div class="stack">
+    <h1 class="app-title">Estadísticas</h1>
+
+    <ion-segment [value]="kind()" (ionChange)="setKind($event.detail.value)" aria-label="Periodo">
+      <ion-segment-button value="week"><ion-label>Semana</ion-label></ion-segment-button>
+      <ion-segment-button value="month"><ion-label>Mes</ion-label></ion-segment-button>
+      <ion-segment-button value="year"><ion-label>Año</ion-label></ion-segment-button>
+    </ion-segment>
+
+    <div class="nav">
+      <ion-button class="round" fill="clear" aria-label="Periodo anterior" (click)="move(-1)">
+        <ion-icon slot="icon-only" name="chevron-back" aria-hidden="true"></ion-icon>
+      </ion-button>
+      <span class="nav-label" aria-live="polite">{{ period().label }}</span>
+      <ion-button class="round" fill="clear" aria-label="Periodo siguiente" [disabled]="isCurrent()" (click)="move(1)">
+        <ion-icon slot="icon-only" name="chevron-forward" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </div>
+
+    <section class="app-card card">
+      <h2 class="app-section-title">Por categoría</h2>
+      @if (rows().length) {
+        <div class="ring">
+          <svg width="180" height="180" viewBox="0 0 180 180" role="img" [attr.aria-label]="'Reparto del gasto: ' + ringLabel()">
+            <g transform="rotate(-90 90 90)">
+              @for (s of segments(); track $index) {
+                <circle cx="90" cy="90" r="70" fill="none" stroke-width="22"
+                  [attr.stroke]="s.color" [attr.stroke-dasharray]="s.dash" [attr.stroke-dashoffset]="s.offset"></circle>
+              }
+            </g>
+          </svg>
+          <div class="ring-center">
+            <strong class="nowrap">{{ money(total()) }}</strong>
+            <span class="app-muted">gastado</span>
+          </div>
+        </div>
+        <ul class="cats">
+          @for (r of rows(); track r.id) {
+            <li class="cat">
+              <span class="cat-icon tiny" [style.background]="r.bg" [style.color]="r.fg">
+                <ion-icon [name]="r.icon" aria-hidden="true"></ion-icon>
+              </span>
+              <span class="cat-body">
+                <span class="cat-line">
+                  <span>{{ r.name }}</span>
+                  <span class="nowrap">{{ r.amount }} <span class="app-muted">· {{ r.percent }}%</span></span>
+                </span>
+                <span class="thin"><span [style.width.%]="r.bar" [style.background]="r.fg"></span></span>
+              </span>
+            </li>
+          }
+        </ul>
+      } @else if (loaded()) {
+        <p class="app-muted empty">No hay gastos en este periodo.</p>
+      }
+    </section>
+
+    <section class="app-card card">
+      <div class="card-head">
+        <h2 class="app-section-title">Evolución</h2>
+        @if (comparison(); as c) {
+          <span class="change" [class.up]="c.up">{{ c.text }}</span>
+        }
+      </div>
+      <div class="chart" role="img" [attr.aria-label]="'Gasto por periodo'">
+        @if (budgetLine(); as b) {
+          <div class="budget" [style.bottom]="'calc(' + b.bottom + '% * 0.78 + 22px)'">
+            <span>{{ b.label }}</span>
+          </div>
+        }
+        <div class="bars" [style.grid-template-columns]="'repeat(' + bars().length + ', minmax(0, 1fr))'">
+          @for (b of bars(); track $index) {
+            <div class="bar-col">
+              <span class="bar-value" [class.current]="b.current">{{ b.value }}</span>
+              <div class="bar" [class.current]="b.current" [style.height]="'calc(' + b.height + '% * 0.78)'"></div>
+              <span class="bar-label app-muted">{{ b.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+</ion-content>

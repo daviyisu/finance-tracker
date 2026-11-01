@@ -1,0 +1,74 @@
+<ion-content class="app-page safe-top" [fullscreen]="true">
+  <div class="stack">
+    <h1 class="app-title">Ajustes</h1>
+
+    <section>
+      <h2 class="group-title">Presupuestos mensuales</h2>
+      <div class="app-card group">
+        @for (b of budgetRows(); track b.id) {
+          <a class="group-row" [routerLink]="['/presupuesto', b.id]">
+            <span class="grow">
+              <span class="line">
+                <span class="key">{{ b.name }}</span>
+                <span class="key nowrap">{{ b.detail }}</span>
+              </span>
+              <span class="thin-bar"><span [class]="b.state" [style.width.%]="b.width"></span></span>
+            </span>
+            <ion-icon class="chev" name="chevron-forward" aria-hidden="true"></ion-icon>
+          </a>
+        }
+        <a class="group-row accent" routerLink="/presupuesto/nuevo">
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+          Añadir presupuesto
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="group-title">General</h2>
+      <div class="app-card group">
+        <div class="group-row">
+          <span class="grow key">Moneda</span>
+          <ion-segment class="currency" [value]="settings().currency" (ionChange)="setCurrency($event.detail.value)" aria-label="Moneda">
+            <ion-segment-button value="EUR"><ion-label>€</ion-label></ion-segment-button>
+            <ion-segment-button value="USD"><ion-label>$</ion-label></ion-segment-button>
+          </ion-segment>
+        </div>
+        <div class="group-row">
+          <ion-select
+            class="grow"
+            label="El mes empieza el"
+            interface="action-sheet"
+            [interfaceOptions]="{ header: 'El mes empieza el día' }"
+            cancelText="Cancelar"
+            justify="space-between"
+            [value]="settings().monthStartDay"
+            (ionChange)="setStartDay($event.detail.value)"
+          >
+            @for (d of days; track d) {
+              <ion-select-option [value]="d">Día {{ d }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <a class="group-row" routerLink="/categorias">
+          <span class="grow key">Categorías</span>
+          <span class="value">{{ categoryCount() }}</span>
+          <ion-icon class="chev" name="chevron-forward" aria-hidden="true"></ion-icon>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="group-title">Datos</h2>
+      <div class="app-card group">
+        <button type="button" class="group-row" [disabled]="exporting()" (click)="exportCsv()">
+          <ion-icon class="lead" name="download-outline" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <span class="key block">Exportar a CSV</span>
+            <span class="hint app-muted">Copia de seguridad de todos tus movimientos</span>
+          </span>
+        </button>
+      </div>
+    </section>
+  </div>
+</ion-content>

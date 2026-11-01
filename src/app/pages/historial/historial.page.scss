@@ -1,0 +1,105 @@
+ion-searchbar {
+  --background: var(--app-surface);
+  padding-top: 0;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  padding: 4px 20px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chip {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.active {
+    background: var(--app-ink);
+    color: #fff;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 24px;
+}
+
+.day {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px 8px;
+  font-size: 13px;
+  font-weight: 700;
+
+  h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.list {
+  padding: 0;
+  overflow: hidden;
+}
+
+ion-item {
+  --background: var(--app-surface);
+  --border-color: var(--app-line);
+  --min-height: 64px;
+  --padding-start: 16px;
+}
+
+.cat-icon {
+  margin-inline-end: 12px;
+}
+
+ion-label {
+  display: flex !important;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sub {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.positive {
+  color: var(--app-accent);
+}
+
+.empty {
+  margin: 0;
+  padding: 16px;
+  font-size: 14px;
+}

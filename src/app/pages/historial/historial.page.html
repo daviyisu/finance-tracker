@@ -1,0 +1,72 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/inicio" text="Inicio"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Historial</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar por nota o categoría"
+      cancelButtonText="Cancelar"
+      [debounce]="250"
+      (ionInput)="setSearch($event.detail.value)"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  <div class="chips" role="group" aria-label="Filtrar por categoría">
+    @for (f of filters(); track f.id) {
+      <button
+        type="button"
+        class="chip"
+        [class.active]="categoryId() === f.id"
+        [attr.aria-pressed]="categoryId() === f.id"
+        (click)="setFilter(f.id)"
+      >
+        {{ f.name }}
+      </button>
+    }
+  </div>
+
+  <div class="stack">
+    @for (g of groups(); track g.key) {
+      <section>
+        <div class="day app-muted">
+          <h2>{{ g.title }}</h2>
+          <span class="nowrap">{{ g.total }}</span>
+        </div>
+        <ion-list class="app-card list" lines="full">
+          @for (r of g.rows; track r.id) {
+            <ion-item-sliding #sliding>
+              <ion-item [routerLink]="['/movimiento', r.id]" [detail]="false">
+                <span slot="start" class="cat-icon" [style.background]="r.bg" [style.color]="r.fg">
+                  <ion-icon [name]="r.icon" aria-hidden="true"></ion-icon>
+                </span>
+                <ion-label>
+                  <span class="name">{{ r.name }}</span>
+                  <span class="sub app-muted">{{ r.subtitle }}</span>
+                </ion-label>
+                <span slot="end" class="amount nowrap" [class.positive]="r.income">{{ r.amount }}</span>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" (click)="remove(r.id, sliding)">Borrar</ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </ion-list>
+      </section>
+    } @empty {
+      @if (loaded()) {
+        <p class="app-card empty app-muted">
+          {{ search() || categoryId() ? 'No hay movimientos que coincidan.' : 'Aún no hay movimientos.' }}
+        </p>
+      }
+    }
+  </div>
+
+  <ion-infinite-scroll [disabled]="done()" (ionInfinite)="loadMore($any($event))">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

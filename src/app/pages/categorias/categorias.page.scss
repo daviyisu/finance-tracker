@@ -1,0 +1,29 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 20px 32px;
+}
+
+.hint {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.list {
+  padding: 0;
+  overflow: hidden;
+}
+
+ion-item {
+  --background: var(--app-surface);
+  --border-color: var(--app-line);
+  --min-height: 56px;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 700;
+}

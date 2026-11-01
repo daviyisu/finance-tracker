@@ -1,0 +1,55 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 20px 32px;
+}
+
+.amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  font-size: 52px;
+  font-weight: 700;
+}
+
+.amount-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  flex: none;
+  min-width: 2ch;
+  max-width: 260px;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  text-align: center;
+}
+
+.error {
+  margin: -8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--app-danger);
+}
+
+ion-select,
+.note {
+  --padding-start: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.note {
+  text-align: right;
+}
+
+.notice {
+  margin: 20px;
+  padding: 16px;
+}
+
+.picker {
+  margin: 0 auto;
+}

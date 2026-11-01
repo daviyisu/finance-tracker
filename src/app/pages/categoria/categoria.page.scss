@@ -1,0 +1,81 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 20px 32px;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat-icon.big {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  font-size: 32px;
+}
+
+.type {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.name {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.error {
+  margin: -8px 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-danger);
+}
+
+.swatches,
+.icons {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.swatches {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.icons {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.swatch,
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+
+  &.selected {
+    border-color: var(--app-ink);
+  }
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.icon-btn {
+  background: var(--app-bg);
+  color: var(--app-ink);
+  font-size: 22px;
+}

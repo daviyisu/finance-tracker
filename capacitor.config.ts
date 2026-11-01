@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'finance-tracker',
+  appId: 'com.daviyisu.financetracker',
+  appName: 'Finance Tracker',
   webDir: 'www'
 };
 

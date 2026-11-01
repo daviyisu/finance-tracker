@@ -1,0 +1,142 @@
+ion-toolbar {
+  --padding-start: 12px;
+  --padding-end: 64px; // centra el selector frente al botón de cerrar
+}
+
+.round {
+  --background: var(--app-surface);
+  --border-radius: 22px;
+  --color: var(--app-ink);
+  width: 44px;
+  height: 44px;
+}
+
+.type {
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 16px 16px;
+}
+
+.amount {
+  margin: 8px 0 0;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  text-align: center;
+
+  span {
+    font-weight: 700;
+  }
+  &.nudge {
+    animation: nudge 0.35s;
+  }
+}
+
+@keyframes nudge {
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.chips {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 60%;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 72px;
+  border-radius: var(--app-radius-md);
+  background: var(--app-surface);
+  color: var(--app-ink);
+  font: inherit;
+
+  &:active {
+    transform: scale(0.96);
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.cat-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+ion-footer {
+  background: var(--app-bg);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px 16px calc(var(--ion-safe-area-bottom, 0px) + 12px);
+}
+
+.key {
+  height: 54px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--app-ink);
+  font: inherit;
+  font-size: 24px;
+  font-weight: 600;
+
+  &:active {
+    background: var(--app-segment);
+  }
+  ion-icon {
+    font-size: 26px;
+  }
+}
+
+.picker {
+  margin: 0 auto;
+}

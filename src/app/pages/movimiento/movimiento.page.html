@@ -1,0 +1,92 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="close()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>Editar movimiento</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" [strong]="true" [disabled]="saving() || !original()" (click)="save()">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  @if (notFound()) {
+    <p class="app-card notice app-muted">Este movimiento ya no existe.</p>
+  } @else if (original()) {
+    <div class="stack">
+      <ion-segment [value]="type()" (ionChange)="setType($event.detail.value)" aria-label="Tipo de movimiento">
+        <ion-segment-button value="expense"><ion-label>Gasto</ion-label></ion-segment-button>
+        <ion-segment-button value="income"><ion-label>Ingreso</ion-label></ion-segment-button>
+      </ion-segment>
+
+      <div class="amount-row">
+        <ion-input
+          class="amount-input"
+          inputmode="decimal"
+          aria-label="Importe"
+          placeholder="0"
+          [value]="amount()"
+          [style.width.ch]="(amount().length || 1) + 1"
+          (ionInput)="amount.set($event.detail.value ?? '')"
+        ></ion-input>
+        <span class="app-muted">{{ symbol() }}</span>
+      </div>
+      @if (triedSave() && !amountCents()) {
+        <p class="error" role="alert">Escribe un importe mayor que cero.</p>
+      }
+
+      <div class="app-card group">
+        <div class="group-row">
+          <ion-select
+            class="grow"
+            label="Categoría"
+            interface="action-sheet"
+            cancelText="Cancelar"
+            justify="space-between"
+            [value]="categoryId()"
+            (ionChange)="categoryId.set($event.detail.value)"
+          >
+            @for (c of categories(); track c.id) {
+              <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <button type="button" class="group-row" (click)="dateOpen.set(true)">
+          <span class="grow key">Fecha</span>
+          <span class="value">{{ dateText() }}</span>
+          <ion-icon class="chev" name="chevron-forward" aria-hidden="true"></ion-icon>
+        </button>
+        <div class="group-row">
+          <ion-input
+            class="grow note"
+            label="Nota"
+            placeholder="Sin nota"
+            maxlength="80"
+            [value]="note()"
+            (ionInput)="note.set($event.detail.value ?? '')"
+          ></ion-input>
+        </div>
+      </div>
+
+      <ion-button class="danger-btn" expand="block" (click)="remove()">Borrar movimiento</ion-button>
+    </div>
+
+    <ion-modal [isOpen]="dateOpen()" (didDismiss)="dateOpen.set(false)" [initialBreakpoint]="0.62" [breakpoints]="[0, 0.62]">
+      <ng-template>
+        <ion-datetime
+          class="picker"
+          presentation="date-time"
+          locale="es-ES"
+          [firstDayOfWeek]="1"
+          [value]="dateIso()"
+          [showDefaultButtons]="true"
+          doneText="Listo"
+          cancelText="Cancelar"
+          (ionChange)="setDate($event.detail.value)"
+          (ionCancel)="dateOpen.set(false)"
+        ></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  }
+</ion-content>

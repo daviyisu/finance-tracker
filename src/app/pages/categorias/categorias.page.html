@@ -1,0 +1,38 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/ajustes" text="Ajustes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/categoria', 'nueva']" [queryParams]="{ tipo: type() }" aria-label="Nueva categoría">
+        <ion-icon slot="icon-only" name="add" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  <div class="stack">
+    <ion-segment [value]="type()" (ionChange)="setType($event.detail.value)" aria-label="Tipo de categoría">
+      <ion-segment-button value="expense"><ion-label>Gasto · {{ expenseCount() }}</ion-label></ion-segment-button>
+      <ion-segment-button value="income"><ion-label>Ingreso · {{ incomeCount() }}</ion-label></ion-segment-button>
+    </ion-segment>
+
+    <p class="hint app-muted">Este orden es el de la rejilla al añadir. Arrastra para reordenar.</p>
+
+    <ion-list class="app-card list" lines="full">
+      <ion-reorder-group [disabled]="false" (ionReorderEnd)="reorder($any($event))">
+        @for (c of items(); track c.id) {
+          <ion-item [routerLink]="['/categoria', c.id]" [detail]="false">
+            <span slot="start" class="cat-icon small" [style.background]="c.bg" [style.color]="c.fg">
+              <ion-icon [name]="c.icon" aria-hidden="true"></ion-icon>
+            </span>
+            <ion-label class="name">{{ c.name }}</ion-label>
+            <ion-reorder slot="end"></ion-reorder>
+          </ion-item>
+        }
+      </ion-reorder-group>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,93 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 20px 32px;
+}
+
+.limit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.limit-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  font-size: 52px;
+  font-weight: 800;
+
+  span {
+    font-weight: 700;
+  }
+}
+
+.limit-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  flex: none;
+  min-width: 2ch;
+  max-width: 260px;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  text-align: center;
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-danger);
+}
+
+ion-select {
+  --padding-start: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 16px;
+}
+
+.head,
+.legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--app-accent);
+
+  &.warn {
+    color: var(--app-warn-icon);
+  }
+  &.over {
+    color: var(--app-danger);
+  }
+}
+
+.thin-bar.big {
+  height: 10px;
+  margin: 0;
+}
+
+.legend {
+  font-size: 13px;
+  font-weight: 600;
+}

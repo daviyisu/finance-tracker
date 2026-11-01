@@ -1,0 +1,75 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>Presupuesto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" [strong]="true" [disabled]="saving()" (click)="save()">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  <div class="stack">
+    <div class="limit">
+      <label for="limit-input" class="app-muted">Límite mensual</label>
+      <div class="limit-row">
+        <ion-input
+          id="limit-input"
+          class="limit-input"
+          inputmode="decimal"
+          placeholder="0"
+          [value]="amount()"
+          [style.width.ch]="(amount().length || 1) + 1"
+          (ionInput)="amount.set($event.detail.value ?? '')"
+          aria-label="Límite mensual"
+        ></ion-input>
+        <span class="app-muted">{{ symbol() }}</span>
+      </div>
+      @if (triedSave() && !amountCents()) {
+        <p class="error" role="alert">Escribe un importe mayor que cero.</p>
+      }
+    </div>
+
+    <div class="app-card group">
+      @if (options().length) {
+        <div class="group-row">
+          <ion-select
+            class="grow"
+            label="Categoría"
+            interface="action-sheet"
+            cancelText="Cancelar"
+            justify="space-between"
+            [value]="target()"
+            (ionChange)="target.set($event.detail.value)"
+          >
+            @for (o of options(); track o.value) {
+              <ion-select-option [value]="o.value">{{ o.label }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+      } @else {
+        <p class="group-row app-muted">Todas las categorías tienen ya presupuesto.</p>
+      }
+    </div>
+
+    @if (status(); as s) {
+      <section class="app-card month">
+        <div class="head">
+          <h2 class="app-section-title">Este mes</h2>
+          <span class="pct" [class]="s.state">{{ s.percent }}%</span>
+        </div>
+        <span class="thin-bar big"><span [class]="s.state" [style.width.%]="s.width"></span></span>
+        <div class="legend">
+          <span class="app-muted">{{ s.spent }}</span>
+          <span>{{ s.left }}</span>
+        </div>
+      </section>
+    }
+
+    @if (existing()) {
+      <ion-button class="danger-btn" expand="block" (click)="remove()">Eliminar presupuesto</ion-button>
+    }
+  </div>
+</ion-content>

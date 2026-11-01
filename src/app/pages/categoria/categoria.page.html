@@ -1,0 +1,81 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>{{ existing() ? 'Editar categoría' : 'Nueva categoría' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" [strong]="true" [disabled]="saving()" (click)="save()">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="app-page">
+  <div class="stack">
+    <div class="preview">
+      <span class="cat-icon big" [style.background]="preview().bg" [style.color]="preview().fg">
+        <ion-icon [name]="icon()" aria-hidden="true"></ion-icon>
+      </span>
+      <span class="type app-muted">{{ type() === 'expense' ? 'Categoría de gasto' : 'Categoría de ingreso' }}</span>
+    </div>
+
+    <div class="app-card group">
+      <ion-input
+        class="name"
+        label="Nombre"
+        labelPlacement="stacked"
+        placeholder="Ej.: Gimnasio"
+        maxlength="24"
+        [value]="name()"
+        (ionInput)="name.set($event.detail.value ?? '')"
+      ></ion-input>
+    </div>
+    @if (triedSave() && !name().trim()) {
+      <p class="error" role="alert">Ponle un nombre.</p>
+    }
+
+    <section>
+      <h2 class="group-title">Color</h2>
+      <div class="app-card swatches" role="radiogroup" aria-label="Color">
+        @for (c of colors; track c.key) {
+          <button
+            type="button"
+            class="swatch"
+            role="radio"
+            [attr.aria-checked]="color() === c.key"
+            [attr.aria-label]="c.label"
+            [class.selected]="color() === c.key"
+            [style.background]="c.bg"
+            [style.color]="c.fg"
+            (click)="color.set(c.key)"
+          >
+            <span class="dot" [style.background]="c.fg"></span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2 class="group-title">Icono</h2>
+      <div class="app-card icons" role="radiogroup" aria-label="Icono">
+        @for (i of icons; track i) {
+          <button
+            type="button"
+            class="icon-btn"
+            role="radio"
+            [attr.aria-checked]="icon() === i"
+            [attr.aria-label]="i"
+            [class.selected]="icon() === i"
+            (click)="icon.set(i)"
+          >
+            <ion-icon [name]="i" aria-hidden="true"></ion-icon>
+          </button>
+        }
+      </div>
+    </section>
+
+    @if (canArchive()) {
+      <ion-button class="danger-btn" expand="block" (click)="archive()">Ocultar categoría</ion-button>
+    }
+  </div>
+</ion-content>
