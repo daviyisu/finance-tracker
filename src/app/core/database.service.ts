@@ -8,7 +8,7 @@ const DB_NAME = 'finance_tracker';
 
 /**
  * Conexión única a la base SQLite local: nativa en iOS/Android
- * y sql.js en el navegador mientras se desarrolla.
+ * y sql.js en el navegador (PWA).
  */
 @Injectable({ providedIn: 'root' })
 export class DatabaseService {

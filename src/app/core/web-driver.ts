@@ -1,10 +1,11 @@
 import { SqlDriver, SqlValue } from './sql-driver';
 
 /**
- * SQLite en el navegador (solo para desarrollo con `npm start`), con sql.js.
+ * SQLite en el navegador (PWA y `npm start`), con sql.js.
  * La base vive en memoria y se guarda en localStorage tras cada escritura.
  */
 export async function openWebDriver(name: string): Promise<SqlDriver> {
+  requestPersistentStorage();
   const { default: initSqlJs } = await import('sql.js');
   // sql-wasm.wasm y sql-wasm-browser.wasm son el mismo binario; se copia el primero a assets/.
   const SQL = await initSqlJs({ locateFile: () => '/assets/sql-wasm.wasm' });
@@ -67,4 +68,9 @@ function writeStorage(key: string, bytes: Uint8Array): void {
   } catch (error) {
     console.warn('No se pudo guardar la base en el navegador', error);
   }
+}
+
+/** Pide al navegador que no borre los datos de la PWA cuando falte espacio. */
+function requestPersistentStorage(): void {
+  navigator.storage?.persist?.().catch(() => undefined);
 }
