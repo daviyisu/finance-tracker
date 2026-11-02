@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 
 import { MIGRATIONS } from './schema';
-import { SqlDriver, SqlValue } from './sql-driver';
+import { SqlDriver, SqlStatement, SqlValue } from './sql-driver';
 
 const DB_NAME = 'finance_tracker';
 
 /**
  * Conexión única a la base SQLite local: nativa en iOS/Android
- * y sql.js en el navegador mientras se desarrolla.
+ * y sql.js en el navegador (PWA).
  */
 @Injectable({ providedIn: 'root' })
 export class DatabaseService {
@@ -20,6 +20,17 @@ export class DatabaseService {
 
   async run(statement: string, values: SqlValue[] = []): Promise<void> {
     await (await this.db()).run(statement, values);
+  }
+
+  /** Varias escrituras en una sola transacción. */
+  async runBatch(statements: SqlStatement[]): Promise<void> {
+    await (await this.db()).runBatch(statements);
+  }
+
+  /** Versión del esquema (PRAGMA user_version). */
+  async schemaVersion(): Promise<number> {
+    const rows = await this.query<{ user_version: number }>('PRAGMA user_version;');
+    return Number(rows[0]?.user_version ?? 0);
   }
 
   private db(): Promise<SqlDriver> {

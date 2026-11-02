@@ -1,20 +1,25 @@
-import { SqlDriver, SqlValue } from './sql-driver';
+import { SqlDriver, SqlStatement, SqlValue } from './sql-driver';
+import { DatabaseStorage, openDatabaseStorage } from './web-storage';
 
 /**
- * SQLite en el navegador (solo para desarrollo con `npm start`), con sql.js.
- * La base vive en memoria y se guarda en localStorage tras cada escritura.
+ * SQLite en el navegador (PWA y `npm start`), con sql.js.
+ * La base vive en memoria y se guarda en IndexedDB tras cada escritura.
  */
 export async function openWebDriver(name: string): Promise<SqlDriver> {
+  requestPersistentStorage();
   const { default: initSqlJs } = await import('sql.js');
   // sql-wasm.wasm y sql-wasm-browser.wasm son el mismo binario; se copia el primero a assets/.
   const SQL = await initSqlJs({ locateFile: () => '/assets/sql-wasm.wasm' });
-  const key = `sqlite:${name}`;
+  const storage = await openStorage(name);
 
-  const saved = readStorage(key);
+  const saved = await storage?.load();
   const db = saved ? new SQL.Database(saved) : new SQL.Database();
   db.run('PRAGMA foreign_keys = ON;');
 
-  const persist = () => writeStorage(key, db.export());
+  // Se espera a que IndexedDB confirme la escritura; si falla, el error llega a quien guardaba.
+  const persist = async () => {
+    await storage?.save(db.export());
+  };
 
   return {
     async query<T>(statement: string, values: SqlValue[] = []) {
@@ -30,7 +35,7 @@ export async function openWebDriver(name: string): Promise<SqlDriver> {
     },
     async run(statement: string, values: SqlValue[] = []) {
       db.run(statement, values);
-      persist();
+      await persist();
     },
     async executeScript(script: string) {
       try {
@@ -39,32 +44,33 @@ export async function openWebDriver(name: string): Promise<SqlDriver> {
         db.exec('ROLLBACK;');
         throw error;
       }
-      persist();
+      await persist();
+    },
+    async runBatch(statements: SqlStatement[]) {
+      db.exec('BEGIN;');
+      try {
+        for (const { statement, values } of statements) db.run(statement, values);
+        db.exec('COMMIT;');
+      } catch (error) {
+        db.exec('ROLLBACK;');
+        throw error;
+      }
+      await persist();
     },
   };
 }
 
-function readStorage(key: string): Uint8Array | null {
+/** Sin IndexedDB (p. ej. algunos modos privados) la app funciona, pero solo en memoria. */
+async function openStorage(name: string): Promise<DatabaseStorage | null> {
   try {
-    const base64 = localStorage.getItem(key);
-    if (!base64) return null;
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return bytes;
-  } catch {
+    return await openDatabaseStorage(name);
+  } catch (error) {
+    console.warn('IndexedDB no disponible: los datos no se guardarán al cerrar la app', error);
     return null;
   }
 }
 
-function writeStorage(key: string, bytes: Uint8Array): void {
-  try {
-    let binary = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    }
-    localStorage.setItem(key, btoa(binary));
-  } catch (error) {
-    console.warn('No se pudo guardar la base en el navegador', error);
-  }
+/** Pide al navegador que no borre los datos de la PWA cuando falte espacio. */
+function requestPersistentStorage(): void {
+  navigator.storage?.persist?.().catch(() => undefined);
 }

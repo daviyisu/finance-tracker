@@ -61,14 +61,32 @@
     <section>
       <h2 class="group-title">Datos</h2>
       <div class="app-card group">
-        <button type="button" class="group-row" [disabled]="exporting()" (click)="exportCsv()">
+        <button type="button" class="group-row" [disabled]="busy()" (click)="exportBackup()">
+          <ion-icon class="lead" name="save-outline" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <span class="key block">Exportar copia de seguridad</span>
+            <span class="hint app-muted">Todos tus datos en un archivo para guardar</span>
+          </span>
+        </button>
+        <button type="button" class="group-row" [disabled]="busy()" (click)="pickBackup()">
+          <ion-icon class="lead" name="folder-open-outline" aria-hidden="true"></ion-icon>
+          <span class="grow">
+            <span class="key block">Restaurar copia de seguridad</span>
+            <span class="hint app-muted">Sustituye tus datos por los de un archivo</span>
+          </span>
+        </button>
+        <button type="button" class="group-row" [disabled]="busy()" (click)="exportCsv()">
           <ion-icon class="lead" name="download-outline" aria-hidden="true"></ion-icon>
           <span class="grow">
             <span class="key block">Exportar a CSV</span>
-            <span class="hint app-muted">Copia de seguridad de todos tus movimientos</span>
+            <span class="hint app-muted">Tus movimientos para abrirlos en Excel</span>
           </span>
         </button>
       </div>
+      <input #backupInput type="file" accept=".json,application/json" hidden (change)="onBackupFile($event)" />
+      <p class="note app-muted">
+        Tus datos solo se guardan en este dispositivo. Exporta una copia de vez en cuando para no perderlos.
+      </p>
     </section>
   </div>
 </ion-content>

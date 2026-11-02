@@ -1,6 +1,7 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
+  AlertController,
   IonContent,
   IonIcon,
   IonLabel,
@@ -11,7 +12,9 @@ import {
   ToastController,
 } from '@ionic/angular';
 
+import { Backup, BackupError, BackupService } from '../../core/backup';
 import { toLocalIso } from '../../core/dates';
+import { isAbort, saveFile } from '../../core/files';
 import { BudgetStatus, FinanceService } from '../../core/finance.service';
 import { formatMoney } from '../../core/money';
 import { CurrencyCode } from '../../core/models';
@@ -26,12 +29,16 @@ const WARN_PERCENT = 80;
 })
 export class AjustesPage {
   private readonly finance = inject(FinanceService);
+  private readonly backups = inject(BackupService);
   private readonly toasts = inject(ToastController);
+  private readonly alerts = inject(AlertController);
+  private readonly backupInput = viewChild.required<ElementRef<HTMLInputElement>>('backupInput');
 
   readonly days = Array.from({ length: 28 }, (_, i) => i + 1);
   readonly settings = this.finance.settings;
   readonly budgets = signal<BudgetStatus[]>([]);
-  readonly exporting = signal(false);
+  /** Hay una exportación o restauración en curso. */
+  readonly busy = signal(false);
 
   readonly budgetRows = computed(() =>
     this.budgets().map((b) => {
@@ -77,32 +84,39 @@ export class AjustesPage {
   }
 
   async exportCsv(): Promise<void> {
-    if (this.exporting()) return;
-    this.exporting.set(true);
-    try {
+    await this.exclusive(async () => {
       const csv = await this.finance.exportCsv();
-      const name = `finance-tracker-${toLocalIso(new Date()).slice(0, 10)}.csv`;
       // El BOM hace que Excel reconozca los acentos.
-      const file = new File(['﻿' + csv], name, { type: 'text/csv' });
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Movimientos' });
-      } else {
-        const url = URL.createObjectURL(file);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = name;
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      await saveFile(new File(['\ufeff' + csv], `finance-tracker-${this.today()}.csv`, { type: 'text/csv' }), 'Movimientos');
+    }, 'No se ha podido exportar.');
+  }
+
+  async exportBackup(): Promise<void> {
+    await this.exclusive(async () => {
+      const json = JSON.stringify(await this.backups.create());
+      const name = `finance-tracker-copia-${this.today()}.json`;
+      await saveFile(new File([json], name, { type: 'application/json' }), 'Copia de seguridad');
+    }, 'No se ha podido crear la copia.');
+  }
+
+  pickBackup(): void {
+    if (this.busy()) return;
+    const input = this.backupInput().nativeElement;
+    input.value = '';
+    input.click();
+  }
+
+  async onBackupFile(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    await this.exclusive(async () => {
+      const backup = await this.backups.read(await file.text());
+      if (await this.confirmRestore(backup)) {
+        await this.backups.restore(backup);
+        await this.finance.reload();
+        await this.toast('Copia restaurada');
       }
-    } catch (error) {
-      if ((error as DOMException)?.name !== 'AbortError') {
-        console.error('No se pudo exportar', error);
-        const toast = await this.toasts.create({ message: 'No se ha podido exportar.', duration: 3000, color: 'danger' });
-        await toast.present();
-      }
-    } finally {
-      this.exporting.set(false);
-    }
+    }, 'No se ha podido restaurar la copia. Tus datos no se han tocado.');
   }
 
   money(cents: number): string {
@@ -112,6 +126,48 @@ export class AjustesPage {
   /** Importe sin decimales para las filas de presupuesto: "842". */
   private whole(cents: number): string {
     return String(Math.round(cents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  private async confirmRestore(backup: Backup): Promise<boolean> {
+    const movements = backup.tables.movements.length;
+    const date = backup.exportedAt ? new Date(backup.exportedAt).toLocaleDateString('es-ES') : null;
+    const alert = await this.alerts.create({
+      header: '¿Restaurar esta copia?',
+      message:
+        `${movements === 1 ? '1 movimiento' : `${movements} movimientos`}${date ? `, copia del ${date}` : ''}. ` +
+        'Se borrarán todos tus datos actuales y se sustituirán por los de la copia.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        { text: 'Restaurar', role: 'destructive' },
+      ],
+    });
+    await alert.present();
+    return (await alert.onDidDismiss()).role === 'destructive';
+  }
+
+  /** Ejecuta una acción de datos sin solaparse con otra y avisa si falla. */
+  private async exclusive(action: () => Promise<void>, failure: string): Promise<void> {
+    if (this.busy()) return;
+    this.busy.set(true);
+    try {
+      await action();
+    } catch (error) {
+      if (!isAbort(error)) {
+        console.error(failure, error);
+        await this.toast(error instanceof BackupError ? error.message : failure, 'danger');
+      }
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  private async toast(message: string, color?: string): Promise<void> {
+    const toast = await this.toasts.create({ message, duration: 3000, color });
+    await toast.present();
+  }
+
+  private today(): string {
+    return toLocalIso(new Date()).slice(0, 10);
   }
 
   private async reload(): Promise<void> {
