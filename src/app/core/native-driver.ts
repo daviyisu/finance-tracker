@@ -1,6 +1,6 @@
 import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
 
-import { SqlDriver, SqlValue } from './sql-driver';
+import { SqlDriver, SqlStatement, SqlValue } from './sql-driver';
 
 /** SQLite nativo de iOS/Android a través de @capacitor-community/sqlite. */
 export async function openNativeDriver(name: string): Promise<SqlDriver> {
@@ -23,6 +23,9 @@ export async function openNativeDriver(name: string): Promise<SqlDriver> {
     },
     async executeScript(script: string) {
       await db.execute(script, true);
+    },
+    async runBatch(statements: SqlStatement[]) {
+      await db.executeSet(statements, true);
     },
   };
 }

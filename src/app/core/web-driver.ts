@@ -1,4 +1,4 @@
-import { SqlDriver, SqlValue } from './sql-driver';
+import { SqlDriver, SqlStatement, SqlValue } from './sql-driver';
 import { DatabaseStorage, openDatabaseStorage } from './web-storage';
 
 /**
@@ -40,6 +40,17 @@ export async function openWebDriver(name: string): Promise<SqlDriver> {
     async executeScript(script: string) {
       try {
         db.exec(`BEGIN;\n${script}\nCOMMIT;`);
+      } catch (error) {
+        db.exec('ROLLBACK;');
+        throw error;
+      }
+      await persist();
+    },
+    async runBatch(statements: SqlStatement[]) {
+      db.exec('BEGIN;');
+      try {
+        for (const { statement, values } of statements) db.run(statement, values);
+        db.exec('COMMIT;');
       } catch (error) {
         db.exec('ROLLBACK;');
         throw error;

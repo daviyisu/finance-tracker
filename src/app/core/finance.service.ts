@@ -101,6 +101,13 @@ export class FinanceService {
     return this.loaded;
   }
 
+  /** Vuelve a leer categorías y ajustes (p. ej. tras restaurar una copia) y avisa a las pantallas. */
+  async reload(): Promise<void> {
+    this.loaded = this.load();
+    await this.ready();
+    this.bump();
+  }
+
   categoriesOf(type: MovementType): Category[] {
     return this.categories()
       .filter((c) => c.type === type && !c.archived)
